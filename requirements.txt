@@ -1,0 +1,5 @@
+python-dotenv==1.2.2
+openai==2.32.0
+gradio==6.12.0
+simpleeval==1.0.7
+requests==2.33.1
