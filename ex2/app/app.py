@@ -33,19 +33,6 @@ AGENTS_BY_INTENT = {
 }
 
 
-def rtl(text: str) -> str:
-    return f"""
-    <div dir="rtl" style="
-        direction: rtl;
-        text-align: right;
-        unicode-bidi: plaintext;
-        width: 100%;
-    ">
-    {text}
-    </div>
-    """
-
-
 def history_to_text(items):
     return "\n".join(
         f'{item.get("role")}: {item.get("content")}'
@@ -137,12 +124,12 @@ def load_chat_history():
     if load_history():
         return [{
             "role": "assistant",
-            "content": rtl("ברוך שובך — נמצאה היסטוריית שיחה."),
+            "content": "ברוך שובך — נמצאה היסטוריית שיחה.",
         }]
 
     return [{
         "role": "assistant",
-        "content": rtl("שלום לך! נעים להכיר. אני בוט התמיכה John"),
+        "content": "שלום לך! נעים להכיר. אני בוט התמיכה John",
     }]
 
 
@@ -153,14 +140,14 @@ def reset_message():
         "ZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/vClUiaIwe8eUEZw2jJ/giphy.gif"
     )
 
-    return rtl(f"""
+    return f"""
 # 🗑️ ההיסטוריה אופסה
 
 <img src="{gif_url}" width="300">
 
 הזיכרון נמחק בהצלחה.  
 אפשר להתחיל שיחה חדשה 🙂
-""")
+"""
 
 
 def chat(message: str, history) -> str:
@@ -180,7 +167,7 @@ def chat(message: str, history) -> str:
     if message.lower() == "/exit":
         save_history(load_history())
 
-        return rtl("נשמר. ביי 👋")
+        return "נשמר. ביי 👋"
 
     try:
         answer = asyncio.run(
@@ -192,7 +179,7 @@ def chat(message: str, history) -> str:
             answer
         )
 
-        return rtl(answer)
+        return answer
 
     except (
         InputGuardrailTripwireTriggered,
@@ -203,15 +190,16 @@ def chat(message: str, history) -> str:
             SAFETY_TEXT
         )
 
-        return rtl(SAFETY_TEXT)
+        return SAFETY_TEXT
 
     except Exception as e:
-        return rtl(f"שגיאה: {e}")
+        return f"שגיאה: {e}"
 
 
 with gr.Blocks(fill_height=True) as demo:
     chatbot = gr.Chatbot(
-        height="80vh"
+        height="80vh",
+        rtl=True
     )
 
     gr.ChatInterface(
@@ -221,6 +209,7 @@ with gr.Blocks(fill_height=True) as demo:
             placeholder="לדוגמה: אני טס ללונדון, צריך לקחת מעיל?",
             container=False,
             scale=7,
+            rtl=True
         ),
     )
 
