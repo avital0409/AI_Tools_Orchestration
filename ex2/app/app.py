@@ -170,11 +170,6 @@ def chat(message: str, history) -> str:
 
         return reset_message()
 
-    if message.lower() == "/exit":
-        logger.info("Command received: /exit - Saving history.")
-        save_history(load_history())
-
-        return "נשמר. ביי 👋"
 
     try:
         answer = asyncio.run(
