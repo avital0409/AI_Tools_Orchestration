@@ -20,6 +20,9 @@ from agents_setup import (
 
 from history import load_history, save_history, reset_history
 from guardrails import SAFETY_TEXT
+from logger_config import setup_logger
+
+logger = setup_logger(__name__)
 
 load_dotenv()
 
@@ -158,13 +161,17 @@ def chat(message: str, history) -> str:
     if not message:
         return ""
 
+    logger.info(f"User Message: {message}")
+
     if message.lower() == "/reset":
+        logger.info("Command received: /reset - Clearing history.")
         reset_history()
         conversation_history.clear()
 
         return reset_message()
 
     if message.lower() == "/exit":
+        logger.info("Command received: /exit - Saving history.")
         save_history(load_history())
 
         return "נשמר. ביי 👋"
