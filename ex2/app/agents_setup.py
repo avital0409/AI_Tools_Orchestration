@@ -10,7 +10,7 @@ MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
 
 weather_agent = Agent(
     name="weather_agent",
-    handoff_description="Handles weather questions and city comparisons.",
+    handoff_description="Handles weather questions and weather-related city comparisons.",
     instructions=f"{RECOMMENDED_PROMPT_PREFIX}\n{WEATHER_AGENT_PROMPT}",
     tools=[getWeather],
     output_type=FinalAnswer,
