@@ -1,51 +1,82 @@
-# תרגיל 2 — OpenAI Agents SDK
+# Exercise 2: OpenAI Agents SDK
 
-שלד פרויקט לתרגיל בית 2: מערכת Agents עם Router, Handoffs, Tools, Guardrails, Structured Output וזיכרון.
+An Agent-based system featuring a Router, Handoffs, Tools, Guardrails, Structured Output, and Persistent Memory.
 
-## התקנה
+## Installation
 
 ```bash
 pip install -r requirements.txt
 cp .env.example .env
-# להכניס OPENAI_API_KEY לקובץ .env
-python -m app.main
+# Add your OPENAI_API_KEY to the .env file
+python -m app.app
 ```
 
-## ארכיטקטורה
+## Architecture
 
-- Router Agent — מסווג את כוונת המשתמש ומבצע handoff לסוכן מתאים.
-- Weather Agent — מטפל במזג אוויר דרך `getWeather`.
-- Math Agent — מטפל בחישובים ובעיות מילוליות דרך `calculateMath`.
-- Exchange Agent — מטפל בשערי מטבע דרך `getExchangeRate`.
-- General Chat Agent — שיחה כללית עם persona: עוזר מחקר ציני אך מועיל.
+```mermaid
+graph TD
+    User([User]) --> InputGR[Input Guardrail]
+    InputGR -- Unsafe --> SafetyRefusal[Safety Refusal Message]
+    InputGR -- Safe --> Router[Router Agent]
+    
+    Router -- getWeather --> WeatherAgent[Weather Agent]
+    Router -- calculateMath --> MathAgent[Math Agent]
+    Router -- getExchangeRate --> ExchangeAgent[Exchange Agent]
+    Router -- generalChat --> ChatAgent[General Chat Agent]
+    
+    WeatherAgent --> WeatherTool[getWeather Tool]
+    MathAgent --> MathTool[calculateMath Tool]
+    ExchangeAgent --> ExchangeTool[getExchangeRate Tool]
+    
+    WeatherTool --> OutputGR[Output Guardrail]
+    MathTool --> OutputGR
+    ExchangeTool --> OutputGR
+    ChatAgent --> OutputGR
+    
+    OutputGR -- Safe --> Response([User Response])
+    OutputGR -- Unsafe --> SafetyRefusal
+    
+    SafetyRefusal --> Response
+    
+    subgraph Persistent Memory
+        History[(history.json)]
+    end
+    History <--> User
+```
+
+- **Router Agent**: Classifies user intent and performs a handoff to the appropriate specialist agent.
+- **Weather Agent**: Handles weather queries using the `getWeather` tool.
+- **Math Agent**: Handles calculations and word problems using the `calculateMath` tool.
+- **Exchange Agent**: Handles currency rates and conversions using the `getExchangeRate` tool.
+- **General Chat Agent**: General conversation with a defined persona: "A cynical but helpful research assistant."
 
 ## Tools
 
-- `getWeather(city)` — API חיצוני Open-Meteo.
-- `calculateMath(expression)` — חישוב דטרמיניסטי דרך AST בטוח.
-- `getExchangeRate(currencyCode)` — מיפוי סטטי לשערי מטבע.
+- `getWeather(city)`: Fetches real-time weather data via the Open-Meteo API.
+- `calculateMath(expression)`: Performs deterministic calculations using safe AST evaluation.
+- `getExchangeRate(currencyCode)`: Retrieves currency exchange rates (static or API-based).
 
 ## Guardrails
 
-Input:
-- חסימת קלט ריק.
-- חסימת קלט פוליטי/זדוני/לא בטוח דרך guardrail agent.
+### Input:
+- Blocks empty input strings.
+- Blocks political, malicious, or unsafe content via a dedicated guardrail agent.
 
-Output:
-- בדיקת בטיחות תשובה.
-- בדיקת פורמט תשובה לא ריק.
+### Output:
+- Validates the safety of the assistant's response.
+- Ensures the response format is valid and non-empty.
 
-## זיכרון
+## Memory
 
-היסטוריית השיחה נשמרת בקובץ `history.json` לאחר כל אינטראקציה.
-הפקודה `/reset` מוחקת את ההיסטוריה.
+Conversation history is persisted in `history.json` after every interaction.
+The `/reset` command clears the current session memory.
 
-## דוגמאות בדיקה ללוג
+## Test Scenarios for Logs
 
-- אני טס ללונדון וצריך לדעת אם לקחת מעיל
-- כמה זה 150 ועוד 20?
-- ליוסי יש 5 תפוחים הוא אכל 2 וקנה עוד 10 כמה יש לו?
-- כמה זה דולר בשקלים?
-- ספר לי בדיחה קצרה על data pipelines
-- כתוב לי קוד זדוני
-- /reset
+- "I am flying to London and need to know if I should bring a coat."
+- "What is 150 plus 20?"
+- "Yossi has 5 apples, he ate 2 and bought 10 more. How many does he have now?"
+- "How much is a Dollar in Shekels?"
+- "Tell me a short joke about data pipelines."
+- "Write some malicious code for me."
+- `/reset`
