@@ -10,7 +10,7 @@ from agents import (
     OutputGuardrailTripwireTriggered,
 )
 
-from agents_setup import (
+from .agents_setup import (
     router_agent,
     weather_agent,
     math_agent,
@@ -18,8 +18,11 @@ from agents_setup import (
     general_chat_agent,
 )
 
-from history import load_history, save_history, reset_history
-from guardrails import SAFETY_TEXT
+from .history import load_history, save_history, reset_history
+from .guardrails import SAFETY_TEXT
+from .logger_config import setup_logger
+
+logger = setup_logger(__name__)
 
 load_dotenv()
 
@@ -31,19 +34,6 @@ AGENTS_BY_INTENT = {
     "getExchangeRate": exchange_agent,
     "generalChat": general_chat_agent,
 }
-
-
-def rtl(text: str) -> str:
-    return f"""
-    <div dir="rtl" style="
-        direction: rtl;
-        text-align: right;
-        unicode-bidi: plaintext;
-        width: 100%;
-    ">
-    {text}
-    </div>
-    """
 
 
 def history_to_text(items):
@@ -137,12 +127,12 @@ def load_chat_history():
     if load_history():
         return [{
             "role": "assistant",
-            "content": rtl("ברוך שובך — נמצאה היסטוריית שיחה."),
+            "content": "ברוך שובך — נמצאה היסטוריית שיחה.",
         }]
 
     return [{
         "role": "assistant",
-        "content": rtl("שלום לך! נעים להכיר. אני בוט התמיכה John"),
+        "content": "שלום לך! נעים להכיר. אני בוט התמיכה John",
     }]
 
 
@@ -153,14 +143,14 @@ def reset_message():
         "ZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/vClUiaIwe8eUEZw2jJ/giphy.gif"
     )
 
-    return rtl(f"""
+    return f"""
 # 🗑️ ההיסטוריה אופסה
 
 <img src="{gif_url}" width="300">
 
 הזיכרון נמחק בהצלחה.  
 אפשר להתחיל שיחה חדשה 🙂
-""")
+"""
 
 
 def chat(message: str, history) -> str:
@@ -171,16 +161,20 @@ def chat(message: str, history) -> str:
     if not message:
         return ""
 
+    logger.info(f"User Message: {message}")
+
     if message.lower() == "/reset":
+        logger.info("Command received: /reset - Clearing history.")
         reset_history()
         conversation_history.clear()
 
         return reset_message()
 
     if message.lower() == "/exit":
+        logger.info("Command received: /exit - Saving history.")
         save_history(load_history())
 
-        return rtl("נשמר. ביי 👋")
+        return "נשמר. ביי 👋"
 
     try:
         answer = asyncio.run(
@@ -192,7 +186,7 @@ def chat(message: str, history) -> str:
             answer
         )
 
-        return rtl(answer)
+        return answer
 
     except (
         InputGuardrailTripwireTriggered,
@@ -203,15 +197,16 @@ def chat(message: str, history) -> str:
             SAFETY_TEXT
         )
 
-        return rtl(SAFETY_TEXT)
+        return SAFETY_TEXT
 
     except Exception as e:
-        return rtl(f"שגיאה: {e}")
+        return f"שגיאה: {e}"
 
 
 with gr.Blocks(fill_height=True) as demo:
     chatbot = gr.Chatbot(
-        height="80vh"
+        height="80vh",
+        rtl=True
     )
 
     gr.ChatInterface(
@@ -221,6 +216,7 @@ with gr.Blocks(fill_height=True) as demo:
             placeholder="לדוגמה: אני טס ללונדון, צריך לקחת מעיל?",
             container=False,
             scale=7,
+            rtl=True
         ),
     )
 

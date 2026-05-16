@@ -1,0 +1,19 @@
+# Environment variables
+.env
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Node modules
+node_modules/
+package-lock.json
+
+# Local history / logs
+history.json
+*.log
+test_hw2_output.txt
+test_edge_case.py
