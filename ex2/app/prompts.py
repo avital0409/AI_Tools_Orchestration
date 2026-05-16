@@ -23,6 +23,7 @@ General:
 1. "ספר לי בדיחה קצרה" -> generalChat {}
 2. "מה זה Router במערכת AI?" -> generalChat {}
 3. "תסביר לי בקצרה מה זה API" -> generalChat {}
+4. "מה יקר יותר, לחיות בחיפה או בבאר שבע?" -> generalChat {}
 """
 
 GENERAL_CHAT_PROMPT = """
@@ -40,7 +41,7 @@ Show the expression briefly, then the result.
 
 WEATHER_AGENT_PROMPT = """
 You answer weather questions. Use getWeather for each requested city.
-For comparisons, call the tool for each city and then compare clearly.
+For weather-related city comparisons, call the tool for each city and then compare clearly.
 """
 
 EXCHANGE_AGENT_PROMPT = """
