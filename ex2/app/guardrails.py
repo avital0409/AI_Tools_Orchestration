@@ -1,7 +1,7 @@
 from agents import Agent, GuardrailFunctionOutput, RunContextWrapper, Runner, input_guardrail, output_guardrail
 from agents import TResponseInputItem
-from models import GuardrailCheck, FinalAnswer
-from logger_config import setup_logger
+from .models import GuardrailCheck, FinalAnswer
+from .logger_config import setup_logger
 
 logger = setup_logger(__name__)
 

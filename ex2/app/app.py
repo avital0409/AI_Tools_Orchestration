@@ -10,7 +10,7 @@ from agents import (
     OutputGuardrailTripwireTriggered,
 )
 
-from agents_setup import (
+from .agents_setup import (
     router_agent,
     weather_agent,
     math_agent,
@@ -18,9 +18,9 @@ from agents_setup import (
     general_chat_agent,
 )
 
-from history import load_history, save_history, reset_history
-from guardrails import SAFETY_TEXT
-from logger_config import setup_logger
+from .history import load_history, save_history, reset_history
+from .guardrails import SAFETY_TEXT
+from .logger_config import setup_logger
 
 logger = setup_logger(__name__)
 

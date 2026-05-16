@@ -2,7 +2,7 @@ import ast
 import operator
 import requests
 from agents import function_tool
-from logger_config import setup_logger
+from .logger_config import setup_logger
 
 logger = setup_logger(__name__)
 

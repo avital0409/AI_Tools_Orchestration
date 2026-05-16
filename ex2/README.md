@@ -11,6 +11,11 @@ cp .env.example .env
 python -m app.app
 ```
 
+## Project Structure
+
+The project is structured as a standard **Python Package**. This ensures reliable module resolution and supports relative imports across the orchestration layers. 
+- Always run the application from the root `ex2` directory using the `-m` (module) flag.
+
 ## Architecture
 
 ```mermaid
